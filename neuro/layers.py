@@ -14,7 +14,7 @@ class Predict:
 
         # Member properties
         self.n_units = n_units
-        self.n_units_prev = n_input
+        self.n_inputs = n_input
         self.l2 = l2
         self._bypass = None
         self._trainable = None
@@ -108,7 +108,7 @@ class Dense:
 
         # Member properties
         self.n_units = n_units
-        self.n_units_prev = n_input
+        self.n_inputs = n_input
         self.l2 = l2
         self._bypass = None
         self._trainable = None
@@ -197,7 +197,7 @@ class Dense:
 
 
 # Residual block class
-class ResBlock:
+class Residual:
     # Constructor
     def __init__(self, n, n_prev, l2, trainable=True):
         # Save inputs

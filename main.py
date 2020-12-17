@@ -77,7 +77,7 @@ if __name__ == '__main__':
     plt.ylim(-2, 2)
     plt.xlim(-3, 3)
 
-    # hyperparameters
+    # Hyper parameters
     alpha = 0.0024
     decay = 0.99995
 

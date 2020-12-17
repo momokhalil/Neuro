@@ -8,7 +8,39 @@ from neuro.misc import utils
 
 
 class Sequential:
-    def __init__(self, *layers_: Union['Sequential', layers.Dense, layers.Predict, layers.ResBlock]) -> None:
+#-------------------------------------------------------------------------------
+# Class: Sequential
+#
+# This class allows one to build a machine learning model comprised of layer
+# sequences. Currently, the available layer types are:
+#       Sequential: A sequantial models
+#            Dense: General dense (fully connected) layer
+#          Predict: Dense (fully connected) layer used to produce predictions
+#         Residual: Residual block (in Residual Neural Nets).
+# This model can be explicitly trained on its own, or can be part of another
+# sequential model and implicitly trained.
+#
+# Member properties
+#
+#   N: Number of training examples                                  (int)
+#   data: Training data                                             (np.ndarray)
+#   labels: Training labels                                         (np.ndarray)
+#   labels_original: Original labels (stored)                       (np.ndarray)
+#   loss: loss function                                             (function)
+#   d_loss: loss function derivatives                               (function)
+#   loss_type: loss function type                                   (str)  
+#   optimizer: optimizer function                                   (function)
+#   optimizer_type: optimizer type                                  (str)
+#   update_opt_param: func for updating optimization params         (function)
+#   _bypass: flag for bypassing layer in forward(), backward()      (bool)
+#   _trainable: flag for updating parameters in update_params()     (bool)
+#
+#
+    def __init__(self,
+                 *layers_: Union['Sequential',
+                                  layers.Dense,
+                                  layers.Predict,
+                                  layers.ResBlock]) -> None:
 
         # Initialize member properties
         self.N = None
