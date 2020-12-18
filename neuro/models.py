@@ -8,34 +8,81 @@ from neuro.misc import utils
 
 
 class Sequential:
-#-------------------------------------------------------------------------------
-# Class: Sequential
-#
-# This class allows one to build a machine learning model comprised of layer
-# sequences. Currently, the available layer types are:
-#       Sequential: A sequantial models
-#            Dense: General dense (fully connected) layer
-#          Predict: Dense (fully connected) layer used to produce predictions
-#         Residual: Residual block (in Residual Neural Nets).
-# This model can be explicitly trained on its own, or can be part of another
-# sequential model and implicitly trained.
-#
-# Member properties
-#
-#   N: Number of training examples                                  (int)
-#   data: Training data                                             (np.ndarray)
-#   labels: Training labels                                         (np.ndarray)
-#   labels_original: Original labels (stored)                       (np.ndarray)
-#   loss: loss function                                             (function)
-#   d_loss: loss function derivatives                               (function)
-#   loss_type: loss function type                                   (str)  
-#   optimizer: optimizer function                                   (function)
-#   optimizer_type: optimizer type                                  (str)
-#   update_opt_param: func for updating optimization params         (function)
-#   _bypass: flag for bypassing layer in forward(), backward()      (bool)
-#   _trainable: flag for updating parameters in update_params()     (bool)
-#
-#
+    """
+    Class: Sequential ----------------------------------------------------------
+
+    This class allows one to build a machine learning model comprised of layer
+    sequences. Currently, the available layer types are:
+        Sequential: A sequantial models
+             Dense: General dense (fully connected) layer
+           Predict: Dense (fully connected) layer used to produce predictions
+          Residual: Residual block (in Residual Neural Nets).
+    This model can be explicitly trained on its own, or can be part of another
+    sequential model and implicitly trained.
+
+    ATTRIBUTES -----------------------------------------------------------------
+
+    template:   *********************
+                * name: (type)      *
+                *     description   *
+                *********************
+
+    N: (int)
+        Number of training examples
+    data: (np.ndarray)
+        Training data
+    labels: (np.ndarray)
+        Training labels
+    labels_original: (np.ndarray)
+        Original labels (stored)
+    loss: (function)
+        loss function
+    d_loss: (function)
+        loss function derivatives
+    loss_type: (str)
+        loss function type
+    optimizer: (function)
+        optimizer function
+    optimizer_type: (str)
+        optimizer type
+    update_opt_param: (function)
+        func for updating optimization params
+    _bypass: (bool)
+        flag for bypassing layer in forward(), backward()
+    _trainable: (bool)
+        flag for updating parameters in update_params()
+    layers: (list)
+        container for all layers in model
+    training_loss: (list)
+        list for storing per-iteration training loss
+    accuracy: (list)
+        list for storing per-iteration training accuracy
+    global_iter: (list)
+        global iteration counter
+
+    METHODS --------------------------------------------------------------------
+
+    template:   *************************************
+                * name(param:type) -> return type   *
+                * ** params description             *
+                *                                   *
+                * method description                *
+                *************************************
+
+    bypass(bypass_: bool) -> None
+        ** bypass_: flag for layer bypass (true or false)
+
+        sets its own _bypass attribute to bypass_, and also sets the _bypass
+        attribute or every layer in self.layers to _bypass
+
+    trainable(trainable_: bool) -> None
+        ** trainable_: flag for layer trainability (true or fase)
+
+        sets its own _trainable attribute to trainable_, and also sets the
+        _trainable attribute or every layer in self.layers to _trainable
+
+
+    """
     def __init__(self,
                  *layers_: Union['Sequential',
                                   layers.Dense,
@@ -62,24 +109,24 @@ class Sequential:
 
     # bypass property
     @property
-    def bypass(self):
+    def bypass(self) -> bool:
         return self._bypass
 
     # bypass setter
     @bypass.setter
-    def bypass(self, bypass_):
+    def bypass(self, bypass_: bool) -> None:
         self._bypass = bypass_
         for layer in self.layers:
             layer.bypass = bypass_
 
     # trainable property
     @property
-    def trainable(self):
+    def trainable(self) -> bool:
         return self._trainable
 
     # trainable setter
     @trainable.setter
-    def trainable(self, trainable_):
+    def trainable(self, trainable_: bool) -> None:
         self._trainable = trainable_
         for layer in self.layers:
             layer.trainable = trainable_
