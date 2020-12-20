@@ -21,11 +21,11 @@ class Predict:
         self.activate = None
         self.d_activate = None
         self.optimizer = None
-        self.w = [np.random.randn(n_units, n_input) * np.sqrt(2 / n_input)]
-        self.b = [np.zeros((n_units, 1))]
+        self.w = [np.random.randn(n_input, n_units) * np.sqrt(2 / n_input)]
+        self.b = [np.zeros((1, n_units))]
         self.dw, self.db = [None], [None]
-        self.z, self.y = None, None
-        self.X, self.dX = None, None
+        self.z = None
+        self.x = None
         self.set_activation(activation_type)
         self.bypass = bypass
         self.trainable = trainable
@@ -64,17 +64,15 @@ class Predict:
 
     # Forward pass
     def forward(self, x):
-        self.X = x
-        self.z = np.matmul(self.X, self.w[0].T) + self.b[0].T
-        self.y = self.activate(self.z)
-        return self.y
+        self.x = x
+        self.z = np.matmul(self.x, self.w[0]) + self.b[0]
+        return self.activate(self.z)
 
     # Backward pass
     def backward(self, z_):
-        self.dw[0] = np.matmul(z_.T, self.X) + self.l2 * self.w[0] / z_.shape[0]
-        self.db[0] = np.sum(z_.T, axis=1, keepdims=True)
-        self.dX = np.matmul(z_, self.w[0])
-        return self.dX
+        self.dw[0] = np.matmul(self.x.T, z_) + self.l2 * self.w[0] / z_.shape[0]
+        self.db[0] = np.sum(z_, axis=0, keepdims=True)
+        return np.matmul(z_, self.w[0].T)
 
     # Return zipped gradients
     def gradients(self):
@@ -114,11 +112,11 @@ class Dense:
         self._trainable = None
         self.activate = None
         self.d_activate = None
-        self.w = [np.random.randn(n_units, n_input) * np.sqrt(2 / n_input)]
-        self.b = [np.zeros((n_units, 1))]
+        self.w = [np.random.randn(n_input, n_units) * np.sqrt(2 / n_input)]
+        self.b = [np.zeros((1, n_units))]
         self.dw, self.db = [None], [None]
-        self.g, self.h = [None], [None]
-        self.X, self.dX = None, None
+        self.g = [None]
+        self.x = None
         self.set_activation(activation_type)
         self.bypass = bypass
         self.trainable = trainable
@@ -163,18 +161,16 @@ class Dense:
 
     # Forward pass
     def forward(self, x):
-        self.X = x
-        self.g[0] = np.matmul(self.X, self.w[0].T) + self.b[0].T
-        self.h[0] = self.activate(self.g[0])
-        return self.h[0]
+        self.x = x
+        self.g[0] = np.matmul(self.x, self.w[0]) + self.b[0]
+        return self.activate(self.g[0])
 
     # Backward pass
     def backward(self, h_):
         g_ = h_ * self.d_activate(self.g[0])
-        self.dw[0] = np.matmul(g_.T, self.X) + self.l2 * self.w[0] / h_.shape[0]
-        self.db[0] = np.sum(g_.T, axis=1, keepdims=True)
-        self.dX = np.matmul(g_, self.w[0])
-        return self.dX
+        self.dw[0] = np.matmul(self.x.T, g_) + self.l2 * self.w[0] / h_.shape[0]
+        self.db[0] = np.sum(g_, axis=0, keepdims=True)
+        return np.matmul(g_, self.w[0].T)
 
     # Return gradients
     def gradients(self):
@@ -196,6 +192,7 @@ class Dense:
             self.opt['vb'] = 0
 
 
+# OUTDATED DO NOT USE AS OF NOW
 # Residual block class
 class Residual:
     # Constructor
@@ -213,7 +210,7 @@ class Residual:
         self.b = [np.zeros((n, 1)), np.zeros((n, 1))]
         self.dw, self.db = [None, None], [None, None]
         self.g, self.h = [None, None], [None, None]
-        self.X, self.dX = None, None
+        self.x, self.dx = None, None
 
     # Set layer trainability
     def trainability(self, trainability):
@@ -233,10 +230,10 @@ class Residual:
 
     # Forward propagation
     def forward(self, X):
-        self.X = X
-        self.g[0] = self.alc(self.X, self.w[0], self.b[0])
+        self.x = X
+        self.g[0] = self.alc(self.x, self.w[0], self.b[0])
         self.h[0] = self.relu(self.g[0])
-        self.g[1] = self.alc(self.h[0], self.w[1], self.b[1]) + self.X
+        self.g[1] = self.alc(self.h[0], self.w[1], self.b[1]) + self.x
         self.h[1] = self.relu(self.g[1])
         return self.h[1]
 
@@ -249,11 +246,11 @@ class Residual:
 
         h1_ = np.matmul(g2_, self.w[1])
         g1_ = h1_ * self.d_relu(self.g[0])
-        self.dw[0] = np.matmul(g1_.T, self.X) + self.l2 * self.w[0] / h1_.shape[0]
+        self.dw[0] = np.matmul(g1_.T, self.x) + self.l2 * self.w[0] / h1_.shape[0]
         self.db[0] = np.sum(g1_.T, axis=1, keepdims=True)
 
-        self.dX = np.matmul(g1_, self.w[0]) + g2_
-        return self.dX
+        self.dx = np.matmul(g1_, self.w[0]) + g2_
+        return self.dx
 
     # Return gradients
     def gradients(self):

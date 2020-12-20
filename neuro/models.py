@@ -83,11 +83,12 @@ class Sequential:
 
 
     """
+
     def __init__(self,
                  *layers_: Union['Sequential',
-                                  layers.Dense,
-                                  layers.Predict,
-                                  layers.ResBlock]) -> None:
+                                 layers.Dense,
+                                 layers.Predict,
+                                 layers.Residual]) -> None:
 
         # Initialize member properties
         self.N = None
@@ -235,15 +236,15 @@ class Sequential:
 
         self.optimize(epochs,
                       iter_epoch,
-                      data.shape[0] if batch_size is None else batch_size,
+                      self.N if batch_size is None else batch_size,
                       self.get_opt_param(optimizer, opt_param))
 
     # Optimize parameters
     def optimize(self,
-                 epochs: int,                   # Number of training epochs
-                 iter_epoch: int,               # Iterations per epoch (default 1000)
-                 batch_size: int,               # batch size
-                 opt_param: dict) -> None:      # learning rate decay
+                 epochs: int,  # Number of training epochs
+                 iter_epoch: int,  # Iterations per epoch (default 1000)
+                 batch_size: int,  # batch size
+                 opt_param: dict) -> None:  # learning rate decay
 
         # Run optimization epochs
         for epoch in range(epochs):
