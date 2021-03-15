@@ -4,3 +4,4 @@ Neuro is a simple machine learning framework I started developing during my grad
 TODO:
 1) Implement some basic reverse-mode automatic diff
 2) Implement unit tests
+3) Documentation!
